@@ -1,0 +1,39 @@
+const exress = require("express")
+const app = express()
+app.use(exress.json())
+
+const users = [];
+
+app.get('/users', (req, res) => {
+  res.status(200).json({users})
+})
+
+app.post('/users', (req, res) => {
+  const {body: userData = {id: 1, name: 'dm'}} = req;
+  users.push(userData)
+  res.status(201).json({message: "User added", user: userData})
+})
+
+app.get('/users/:id', (req, res) => {
+  const {params: {id}} = req;
+  const user = users.find((user) => user.id === id);
+
+  if(user) {
+    res.status(200).json({user})
+  }
+  res.json({message: 'user not found'})
+})
+
+app.put('/users/:id', (req, res) => {
+  const {params: {id}, body} = req;
+  users = users.map((user) =>
+    user.id === id ? {...user, ...body}: user);
+  const updatedUser = users.find(user => user.id === id)
+
+  res.json({message: "User updated", user: updatedUser})
+})
+
+app.delete('/users/:id', (req, res) => {
+  users = users.filter(user => user.id !== req.params.id)
+  res.json("User deleted")
+})
